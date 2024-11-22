@@ -2,6 +2,7 @@ import { Card } from "./card";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 import { AtpAgent } from "@atproto/api";
+import ShareButton from "./share";
 
 const agent = new AtpAgent({
   service: "https://public.api.bsky.app/",
@@ -29,8 +30,9 @@ export default async function Page({
         <ArrowLeftIcon />
         <span>Find My Card</span>
       </Link>
-      <div className="grid place-items-center grow">
+      <div className="flex flex-col items-center justify-center grow gap-4">
         <Card profile={profile} />
+        <ShareButton />
       </div>
     </div>
   );
