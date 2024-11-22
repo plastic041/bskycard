@@ -20,7 +20,6 @@ const RARITY: {
 };
 
 export function getRarity(str: string) {
-  return "SSSR";
   const num = stringToNumber(str);
   const remainder = num % DIVIDER;
 
