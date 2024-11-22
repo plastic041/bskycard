@@ -143,7 +143,6 @@ export function Card({
       }}
     >
       <motion.div
-        title="https://github.com/plastic041/snubi-net/blob/main/src/pages/hero.tsx"
         className="rounded-md"
         ref={ref}
         whileHover={{
