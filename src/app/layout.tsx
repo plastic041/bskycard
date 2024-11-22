@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="antialiased h-svh flex flex-col container">
+      <body className="antialiased h-svh flex flex-col container mx-auto">
         {children}
 
         <footer className="ml-auto mb-8">
