@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import {
   easeOut,
   motion,
@@ -144,7 +146,15 @@ export function Card({
         element.removeEventListener("mouseleave", handleMouseEnd);
       };
     }
-  }, []);
+  }, [
+    mousePercentX,
+    mousePercentY,
+    rotateXSpring,
+    rotateYSpring,
+    translateX,
+    translateY,
+    translateZ,
+  ]);
 
   return (
     <div
@@ -193,6 +203,7 @@ export function Card({
               className="absolute aspect-square w-full rounded-t-sm"
               src={profile.avatar}
               draggable="false"
+              alt={profile.displayName}
             />
             <motion.div
               className={`absolute left-0 right-0 m-2 rounded bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
