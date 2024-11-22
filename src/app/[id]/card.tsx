@@ -11,13 +11,7 @@ import {
 import { useEffect, useRef } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
 import { RARITY_STYLES, getRarity } from "./hash";
-import {
-  FlameIcon,
-  ShieldIcon,
-  SparklesIcon,
-  SwordIcon,
-  UsersIcon,
-} from "lucide-react";
+import { FlameIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
 
 const WIDTH = 320;
 const HEIGHT = (WIDTH / 3) * 4;

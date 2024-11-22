@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { AtpAgent } from "@atproto/api";
-import { getRarity } from "./hash";
+import { getRarity, RARITY_STYLES_OPENGRAPH } from "./hash";
 
 export const alt = "Your bluesky card";
 export const size = {
@@ -22,11 +22,14 @@ export default async function Image({ params }: { params: { id: string } }) {
 
   const profile = response.data;
 
+  const rarity = getRarity(profile.did);
+  const style = RARITY_STYLES_OPENGRAPH[rarity];
+
   return new ImageResponse(
     (
       <div
         style={{
-          backgroundColor: "#29685f",
+          backgroundColor: "white",
           display: "flex",
           width: size.width,
           height: size.height,
@@ -38,52 +41,41 @@ export default async function Image({ params }: { params: { id: string } }) {
           style={{
             display: "flex",
             flexDirection: "column",
-            margin: "0 auto",
-            width: "27rem",
-            height: "36rem",
-            borderRadius: "0.5rem",
-            backgroundColor: "#eef0e7",
+            gap: "0.5rem",
           }}
         >
+          <img
+            style={{
+              width: "27rem",
+              height: "27rem",
+              borderRadius: "0.5rem",
+            }}
+            src={profile.avatar}
+          />
           <div
             style={{
-              position: "relative",
               display: "flex",
-              flexDirection: "column",
+              position: "relative",
             }}
           >
-            <img
-              style={{
-                position: "absolute",
-                margin: "1rem",
-                width: "25rem",
-                height: "25rem",
-                borderRadius: "50%",
-                border: "8px solid #29685f",
-                backgroundColor: "#19443c",
-              }}
-              src={profile.avatar}
-            />
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                position: "absolute",
-                left: 0,
-                right: 0,
-                margin: "0.5rem",
-                borderRadius: "0.25rem",
-                backgroundColor: "#19443c",
-                padding: "0.5rem",
-                textAlign: "center",
-                color: "#eef0e7",
-                alignItems: "center",
+                width: "27rem",
+                borderRadius: "0.5rem",
+                backgroundColor: style.bg,
+                paddingTop: "0.5rem",
+                paddingBottom: "0.5rem",
+                paddingLeft: "1rem",
+                color: style.text,
+                gap: "-.25rem",
               }}
             >
               <span style={{ fontSize: "2.5rem" }}>
                 {profile.displayName ?? profile.handle}
               </span>
-              <span style={{ fontSize: "1.5rem", opacity: 0.75 }}>
+              <span style={{ fontSize: "1.25rem", opacity: 0.7 }}>
                 @{profile.handle}
               </span>
             </div>
@@ -93,62 +85,20 @@ export default async function Image({ params }: { params: { id: string } }) {
                 alignItems: "center",
                 justifyContent: "center",
                 position: "absolute",
-                marginLeft: "18rem",
-                marginTop: "18rem",
-                width: "8rem",
-                height: "8rem",
+                marginLeft: "auto",
+                right: "1rem",
+                marginTop: "1.125rem",
+                height: "4rem",
+                paddingLeft: "2rem",
+                paddingRight: "2rem",
                 placeItems: "center",
-                borderRadius: "50%",
-                backgroundColor: "#aa5939",
-                fontSize: "3rem",
-                color: "#eef0e7",
+                borderRadius: "50rem",
+                backgroundColor: "rgb(255 255 255 / 0.6)",
+                fontSize: "2rem",
+                color: style.text,
               }}
             >
               {getRarity(profile.did)}
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginTop: "27rem",
-              gap: "3rem",
-              padding: "0 2rem",
-              fontSize: "2.5rem",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div style={{ color: "#29685f" }}>Followers</div>
-              <div style={{ color: "#29685f" }}>Posts</div>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  color: "#19443c",
-                }}
-              >
-                {profile.followersCount ?? 0}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  color: "#19443c",
-                }}
-              >
-                {profile.postsCount ?? 0}
-              </div>
             </div>
           </div>
         </div>

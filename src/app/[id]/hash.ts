@@ -20,6 +20,7 @@ const RARITY: {
 };
 
 export function getRarity(str: string) {
+  return "SSSR";
   const num = stringToNumber(str);
   const remainder = num % DIVIDER;
 
@@ -65,5 +66,29 @@ export const RARITY_STYLES: {
     gradient: "bg-gradient-to-br from-yellow-500 to-yellow-600",
     glow: "shadow-yellow-500/50",
     text: "text-yellow-50",
+  },
+};
+
+export const RARITY_STYLES_OPENGRAPH: {
+  [key in Rarity]: {
+    bg: string;
+    text: string;
+  };
+} = {
+  R: {
+    bg: "#d1d5db",
+    text: "#374151",
+  },
+  SR: {
+    bg: "#86efac",
+    text: "#166534",
+  },
+  SSR: {
+    bg: "#c084fc",
+    text: "#4c1d95",
+  },
+  SSSR: {
+    bg: "#fde047",
+    text: "#713f12",
   },
 };
