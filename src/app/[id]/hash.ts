@@ -6,19 +6,17 @@ function stringToNumber(str: string): number {
   return hash;
 }
 
-type Rarity = "SSS" | "SS" | "S" | "A" | "B" | "C";
+type Rarity = "SSSR" | "SSR" | "SR" | "R";
 
 const DIVIDER = 1000;
 
 const RARITY: {
   [key in Rarity]: number;
 } = {
-  SSS: 1,
-  SS: 5,
-  S: 10,
-  A: 100,
-  B: 300,
-  C: 1000,
+  SSSR: 5,
+  SSR: 50,
+  SR: 100,
+  R: 1000,
 };
 
 export function getRarity(str: string) {
@@ -33,5 +31,39 @@ export function getRarity(str: string) {
     }
   }
 
-  return "C";
+  return "R";
 }
+
+export const RARITY_STYLES: {
+  [key in Rarity]: {
+    border: string;
+    gradient: string;
+    glow: string;
+    text: string;
+  };
+} = {
+  R: {
+    border: "border-gray-400",
+    gradient: "bg-gradient-to-br from-gray-300 to-gray-500",
+    glow: "shadow-gray-400/50",
+    text: "text-gray-700",
+  },
+  SR: {
+    border: "border-green-500",
+    gradient: "bg-gradient-to-br from-green-400 to-green-600",
+    glow: "shadow-green-500/50",
+    text: "text-green-900",
+  },
+  SSR: {
+    border: "border-purple-500",
+    gradient: "bg-gradient-to-br from-purple-400 to-purple-600",
+    glow: "shadow-purple-500/50",
+    text: "text-purple-50",
+  },
+  SSSR: {
+    border: "border-yellow-500",
+    gradient: "bg-gradient-to-br from-yellow-500 to-yellow-600",
+    glow: "shadow-yellow-500/50",
+    text: "text-yellow-50",
+  },
+};

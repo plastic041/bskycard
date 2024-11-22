@@ -10,7 +10,14 @@ import {
 } from "motion/react";
 import { useEffect, useRef } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
-import { getRarity } from "./hash";
+import { RARITY_STYLES, getRarity } from "./hash";
+import {
+  FlameIcon,
+  ShieldIcon,
+  SparklesIcon,
+  SwordIcon,
+  UsersIcon,
+} from "lucide-react";
 
 const WIDTH = 320;
 const HEIGHT = (WIDTH / 3) * 4;
@@ -21,6 +28,15 @@ const spring = {
   stiffness: 1000,
   damping: 30,
 } as const;
+
+function formatNumber(num: number) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toString();
+}
 
 function isTouchDevice() {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0;
@@ -40,11 +56,14 @@ export function Card({
 
   const translateZ = useSpring(0, spring);
   const translateZText = useTransform(translateZ, [0, 1], [0, 48]);
-  const translateZImg = useTransform(translateZ, [0, 1], [0, 24]);
+  const translateZRarity = useTransform(translateZ, [0, 1], [0, 24]);
 
   const rotateXSpring = useSpring(0, spring);
   const rotateYSpring = useSpring(0, spring);
   const rotateZ = useMotionValue(0);
+
+  const rarity = getRarity(profile.did);
+  const style = RARITY_STYLES[rarity];
 
   useAnimationFrame((time) => {
     if (ref.current === null) {
@@ -131,7 +150,7 @@ export function Card({
         element.removeEventListener("mouseleave", handleMouseEnd);
       };
     }
-  });
+  }, []);
 
   return (
     <div
@@ -165,7 +184,7 @@ export function Card({
         }}
       >
         <div
-          className="[grid-area:1/1] relative aspect-[3/4] w-80 rounded-lg bg-[#eef0e7] select-none"
+          className={`relative aspect-[3/4] w-80 rounded select-none flex flex-col bg-white border-2 ${style.border}`}
           style={{
             transformStyle: "preserve-3d",
           }}
@@ -176,67 +195,70 @@ export function Card({
               transformStyle: "preserve-3d",
             }}
           >
-            <motion.img
-              className="absolute m-4 aspect-square w-72 rounded-full border-8 border-[#29685f] bg-[#19443c]"
-              style={{ z: translateZImg }}
+            <img
+              className="absolute aspect-square w-full rounded-t-sm"
               src={profile.avatar}
               draggable="false"
             />
             <motion.div
-              className="absolute left-0 right-0 m-2 rounded bg-[#19443c] py-2 text-center text-[#eef0e7] flex flex-col items-center"
-              style={{ z: translateZText }}
+              className={`absolute left-0 right-0 m-2 rounded bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
+              style={{
+                transformStyle: "preserve-3d",
+                z: translateZText,
+              }}
             >
-              <span className="text-2xl">
-                {profile.displayName ?? profile.handle}
-              </span>
-              <span className="text-sm opacity-75">@{profile.handle}</span>
+              <div className="flex flex-col">
+                <div className="text-xl flex flex-row items-center gap-2">
+                  <SparklesIcon className="w-5 h-5 text-white" />
+
+                  {profile.displayName ?? profile.handle}
+                </div>
+                <span className="text-sm opacity-75">@{profile.handle}</span>
+              </div>
+              <motion.div
+                className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${style.glow}`}
+                style={{ z: translateZRarity }}
+              >
+                {rarity}
+              </motion.div>
             </motion.div>
             <motion.div
-              className="absolute ml-56 mt-60 grid aspect-square w-16 place-items-center rounded-full bg-[#aa5939] text-3xl text-[#eef0e7]"
+              className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
               style={{ z: translateZText }}
             >
-              {getRarity(profile.did)}
+              <FlameIcon size={16} />
+              <span>{formatNumber(profile.postsCount ?? 0)}</span>
             </motion.div>
           </div>
 
-          <div
-            className="left-0 right-0 mt-2 grid grid-cols-2 grid-rows-2 gap-x-8 px-8 text-xl"
-            style={{
-              transformStyle: "preserve-3d",
-            }}
-          >
-            <motion.div
-              className="text-[#29685f]"
-              style={{ z: translateZText }}
+          <div className="px-4 py-2 text-2xl flex flex-col gap-1 tabular-nums grow justify-center">
+            <div
+              className="flex items-center flex-row gap-4"
+              style={{
+                transformStyle: "preserve-3d",
+              }}
             >
-              Followers
-            </motion.div>
-            <motion.div
-              className="text-[#19443c]"
-              style={{ z: translateZText }}
+              <SwordIcon className="text-[#29685f]" size={24} />
+              <div className="text-[#19443c]">{profile.followersCount}</div>
+            </div>
+            <div
+              className="flex items-center flex-row gap-4"
+              style={{
+                transformStyle: "preserve-3d",
+              }}
             >
-              {profile.followersCount}
-            </motion.div>
-            <motion.div
-              className="text-[#29685f]"
-              style={{ z: translateZText }}
-            >
-              Posts
-            </motion.div>
-            <motion.div
-              className="text-[#19443c]"
-              style={{ z: translateZText }}
-            >
-              {profile.postsCount}
-            </motion.div>
+              <ShieldIcon className="text-[#29685f]" size={24} />
+              <div className="text-[#19443c]">{profile.followsCount}</div>
+            </div>
           </div>
 
-          <div className="mx-2 mt-6 border-b border-[#29685f] opacity-50" />
+          <div className="mx-2 border-b border-[#29685f] opacity-50" />
 
-          <div className="pr-2 text-right text-[0.5rem] text-[#29685f] opacity-50">
+          <div className="pr-2 mb-0.5 text-right text-[0.5rem] text-[#29685f] opacity-50">
             {profile.did}
           </div>
         </div>
+        {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-gradient-to-br from-transparent via-white to-transparent" /> */}
       </motion.div>
     </div>
   );
