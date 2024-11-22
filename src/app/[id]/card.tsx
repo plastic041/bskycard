@@ -143,7 +143,7 @@ export function Card({
       }}
     >
       <motion.div
-        className="rounded-md"
+        className="rounded-md grid w-full h-full"
         ref={ref}
         whileHover={{
           scale: 1.1,
@@ -156,16 +156,12 @@ export function Card({
         transition={spring}
         style={{
           touchAction: "none",
-          perspective: "1000px",
           transformStyle: "preserve-3d",
-          width: "100%",
-          height: "100%",
           rotateX: rotateXSpring,
           rotateY: rotateYSpring,
           rotateZ: rotateZ,
           x: translateX,
           y: translateY,
-          display: "grid",
         }}
       >
         <div

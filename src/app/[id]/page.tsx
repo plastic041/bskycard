@@ -1,7 +1,7 @@
-import { AtpAgent } from "@atproto/api";
 import { Card } from "./card";
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
+import { AtpAgent } from "@atproto/api";
 
 const agent = new AtpAgent({
   service: "https://public.api.bsky.app/",
