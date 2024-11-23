@@ -4,12 +4,15 @@ import { Card } from "./card";
 import { AppBskyActorDefs } from "@atproto/api";
 import { useRef } from "react";
 import { DownloadButton } from "./download-button";
+import { usePathname } from "next/navigation";
 
 export default function Content({
   profile,
 }: {
   profile: AppBskyActorDefs.ProfileViewDetailed;
 }) {
+  const pathname = usePathname();
+
   const cardRef = useRef<HTMLDivElement>(null);
   const functionRef = useRef<{ capture: () => void }>(null);
 
@@ -17,7 +20,7 @@ export default function Content({
     <div className="flex flex-col items-center justify-center grow gap-4">
       <Card profile={profile} cardRef={cardRef} functionRef={functionRef} />
       <a
-        href={`https://bsky.app/intent/compose?text=${window.location}`}
+        href={`https://bsky.app/intent/compose?text=https://yourblueskycard.vercel.app${pathname}`}
         target="_blank"
         className="flex flex-row gap-2 items-center rounded-sm p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
       >
