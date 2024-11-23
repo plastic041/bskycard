@@ -1,0 +1,57 @@
+"use client";
+
+import { toPng } from "html-to-image";
+import { AppBskyActorDefs } from "@atproto/api";
+import { type RefObject, useState } from "react";
+import { ImageDownIcon, LoaderCircleIcon } from "lucide-react";
+
+export function DownloadButton({
+  profile,
+  cardRef,
+}: {
+  profile: AppBskyActorDefs.ProfileViewDetailed;
+  cardRef: RefObject<HTMLDivElement>;
+}) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function downloadImage() {
+    if (cardRef.current !== null) {
+      setIsDownloading(true);
+      const dataUrl = await toPng(cardRef.current, {
+        includeQueryParams: true,
+        filter: (node) => {
+          if (node.nodeName === "IMG") {
+            (node as HTMLImageElement).src = `/api/proxy-image?url=${
+              (node as HTMLImageElement).src
+            }`;
+          }
+          return true;
+        },
+      });
+
+      const link = document.createElement("a");
+      link.download = `${profile.handle}.png`;
+      link.href = dataUrl;
+      link.click();
+
+      setIsDownloading(false);
+    }
+  }
+
+  return (
+    <button
+      className="flex flex-row gap-2 items-center rounded-sm p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
+      onClick={downloadImage}
+    >
+      {isDownloading ? (
+        <>
+          Downloading... <LoaderCircleIcon className="animate-spin" />
+        </>
+      ) : (
+        <>
+          Download Image <ImageDownIcon />
+        </>
+      )}
+    </button>
+  );
+}
