@@ -17,6 +17,7 @@ export default function Content({
       <Card profile={profile} cardRef={cardRef} />
       <a
         href={`https://bsky.app/intent/compose?text=${window.location}`}
+        target="_blank"
         className="flex flex-row gap-2 items-center rounded-sm p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
       >
         Share on
