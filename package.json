@@ -11,6 +11,7 @@
   "dependencies": {
     "@atproto/api": "^0.13.17",
     "@vercel/analytics": "^1.4.1",
+    "html-to-image": "^1.11.11",
     "lucide-react": "^0.460.0",
     "motion": "^11.11.17",
     "next": "15.0.3",

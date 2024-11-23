@@ -10,7 +10,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
 import { RARITY_STYLES, getRarity } from "./hash";
 import { FlameIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
@@ -40,8 +40,10 @@ function isTouchDevice() {
 
 export function Card({
   profile,
+  cardRef,
 }: {
   profile: AppBskyActorDefs.ProfileViewDetailed;
+  cardRef: RefObject<HTMLDivElement>;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -164,6 +166,7 @@ export function Card({
         width: WIDTH,
         height: HEIGHT,
       }}
+      ref={cardRef}
     >
       <motion.div
         className="rounded-md grid w-full h-full"
