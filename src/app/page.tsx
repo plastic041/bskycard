@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon, LoaderCircle } from "lucide-react";
 import { Input } from "./input";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
