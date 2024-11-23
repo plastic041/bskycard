@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "Bluesky Profile TCG Card",
@@ -27,8 +27,8 @@ export default function RootLayout({
             by <span className="text-blue-500">@snubi.bsky.social</span>
           </a>
         </footer>
-        <Analytics />
       </body>
+      <GoogleAnalytics gaId="G-T1LXJ8KRQK" />
     </html>
   );
 }

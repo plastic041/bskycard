@@ -11,7 +11,7 @@
   "dependencies": {
     "@atproto/api": "^0.13.17",
     "@lucide/lab": "^0.1.2",
-    "@vercel/analytics": "^1.4.1",
+    "@next/third-parties": "^15.0.3",
     "lucide-react": "^0.460.0",
     "modern-screenshot": "^4.5.4",
     "motion": "^11.11.17",
