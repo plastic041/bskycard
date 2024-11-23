@@ -13,8 +13,8 @@ import {
 } from "motion/react";
 import { type RefObject, useEffect, useRef } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
-import { RARITY_STYLES, getRarity } from "./hash";
-import { FlameIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
+import { RARITY_STYLES, getRarity, TYPE_STYLES, getType } from "./hash";
+import { HeartIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
 
 const WIDTH = 320;
 const HEIGHT = (WIDTH / 3) * 4;
@@ -49,6 +49,9 @@ export function Card({
   const ref = useRef<HTMLDivElement | null>(null);
 
   const hovering = useSpring(0, spring);
+  const transformStyle = useTransform(() =>
+    hovering.get() > 0.2 ? "preserve-3d" : "flat"
+  );
 
   const mousePercentX = useMotionValue(0);
   const mousePercentY = useMotionValue(0);
@@ -64,7 +67,9 @@ export function Card({
   const rotateZ = useMotionValue(0);
 
   const rarity = getRarity(profile.did);
-  const style = RARITY_STYLES[rarity];
+  const rarityStyle = RARITY_STYLES[rarity];
+  const type = getType(profile.did);
+  const typeStyle = TYPE_STYLES[type];
 
   const overlayTemplate = useMotionTemplate`
   radial-gradient(
@@ -188,7 +193,7 @@ export function Card({
   ]);
 
   return (
-    <div
+    <motion.div
       style={{
         perspective: "1000px",
         transformStyle: "preserve-3d",
@@ -220,7 +225,7 @@ export function Card({
         }}
       >
         <div
-          className={`relative aspect-3/4 w-80 rounded-md select-none flex flex-col bg-white border-2 ${style.border}`}
+          className={`relative aspect-3/4 w-80 rounded-md select-none flex flex-col bg-white border-2 ${rarityStyle.border}`}
           style={{
             transformStyle: "preserve-3d",
           }}
@@ -259,7 +264,7 @@ export function Card({
             </div>
 
             <motion.div
-              className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
+              className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${rarityStyle.gradient} ${rarityStyle.text}`}
               style={{
                 transformStyle: "preserve-3d",
                 z: translateZText,
@@ -285,7 +290,7 @@ export function Card({
                 />
               </div>
               <motion.div
-                className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${style.glow}`}
+                className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${rarityStyle.glow}`}
                 style={{ z: translateZRarity }}
                 animate={
                   rarity === "SSR" || rarity === "SSSR"
@@ -307,35 +312,49 @@ export function Card({
               className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
               style={{ z: translateZText }}
             >
-              <FlameIcon size={22} className="fill-red-500 stroke-red-500" />
+              <HeartIcon size={20} className="fill-red-500 stroke-red-500" />
               <span>{formatNumber(profile.postsCount ?? 0)}</span>
             </motion.div>
           </div>
 
-          <div className="px-4 py-2 text-2xl flex flex-col gap-1 tabular-nums grow justify-center">
-            <div
-              className="flex items-center flex-row gap-4"
-              style={{
-                transformStyle: "preserve-3d",
-              }}
-            >
-              <SwordIcon className="text-[#29685f]" size={24} />
-              <div className="text-[#19443c]">
-                {formatNumber(profile.followersCount ?? 0)}
+          <motion.div
+            className="flex flex-row px-4 py-2 grow justify-between"
+            style={{
+              transformStyle,
+            }}
+          >
+            <div className="text-2xl flex flex-col gap-1 tabular-nums justify-center">
+              <div
+                className="flex items-center flex-row gap-4"
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <SwordIcon className="text-[#29685f]" size={24} />
+                <div className="text-[#19443c]">
+                  {formatNumber(profile.followersCount ?? 0)}
+                </div>
+              </div>
+              <div
+                className="flex items-center flex-row gap-4"
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <ShieldIcon className="text-[#29685f]" size={24} />
+                <div className="text-[#19443c]">
+                  {formatNumber(profile.followsCount ?? 0)}
+                </div>
               </div>
             </div>
-            <div
-              className="flex items-center flex-row gap-4"
-              style={{
-                transformStyle: "preserve-3d",
-              }}
-            >
-              <ShieldIcon className="text-[#29685f]" size={24} />
-              <div className="text-[#19443c]">
-                {formatNumber(profile.followsCount ?? 0)}
+            <div className="grid place-content-center rotate-x-20 rotate-y-160 translate-z-10">
+              <div
+                className={`grid place-content-center p-2 rounded-full bg-white border-3 ${typeStyle.border}`}
+              >
+                <typeStyle.Icon size={48} className={`${typeStyle.stroke}`} />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           <div className="mx-2 border-b border-[#29685f] opacity-50" />
 
@@ -345,6 +364,6 @@ export function Card({
         </div>
         {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
       </motion.div>
-    </div>
+    </motion.div>
   );
 }

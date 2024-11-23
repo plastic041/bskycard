@@ -1,3 +1,18 @@
+import { FlameIcon, Icon, LeafIcon } from "lucide-react";
+import { planet, unicornHead } from "@lucide/lab";
+import type { ComponentPropsWithRef } from "react";
+
+const PlanetIcon = (
+  props: Omit<ComponentPropsWithRef<typeof Icon>, "iconNode">
+) => {
+  return <Icon iconNode={planet} {...props} />;
+};
+const UnicornHeadIcon = (
+  props: Omit<ComponentPropsWithRef<typeof Icon>, "iconNode">
+) => {
+  return <Icon iconNode={unicornHead} {...props} />;
+};
+
 function stringToNumber(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -8,7 +23,7 @@ function stringToNumber(str: string): number {
 
 type Rarity = "SSSR" | "SSR" | "SR" | "R";
 
-const DIVIDER = 1000;
+const RARITY_DIVIDER = 1000;
 
 const RARITY: {
   [key in Rarity]: number;
@@ -21,7 +36,7 @@ const RARITY: {
 
 export function getRarity(str: string): Rarity {
   const num = stringToNumber(str);
-  const remainder = num % DIVIDER;
+  const remainder = num % RARITY_DIVIDER;
 
   for (const key of Object.keys(RARITY)) {
     const rarity = RARITY[key as Rarity];
@@ -32,6 +47,51 @@ export function getRarity(str: string): Rarity {
   }
 
   return "R";
+}
+
+const TYPE_DIVIDER = 4;
+const TYPE_RATE = {
+  "0": 0,
+  "1": 1,
+  "2": 2,
+  "3": 3,
+};
+export const TYPE_STYLES = {
+  "0": {
+    Icon: UnicornHeadIcon,
+    stroke: "stroke-violet-500",
+    border: "border-violet-500",
+  },
+  "1": {
+    Icon: PlanetIcon,
+    stroke: "stroke-blue-500",
+    border: "border-blue-500",
+  },
+  "2": {
+    Icon: FlameIcon,
+    stroke: "stroke-red-500",
+    border: "border-red-500",
+  },
+  "3": {
+    Icon: LeafIcon,
+    stroke: "stroke-green-500",
+    border: "border-green-500",
+  },
+};
+
+export function getType(str: string) {
+  const num = stringToNumber(str);
+  const remainder = num % TYPE_DIVIDER;
+
+  for (const key of Object.keys(TYPE_RATE)) {
+    const type = TYPE_RATE[key as "0" | "1" | "2" | "3"];
+
+    if (remainder < type) {
+      return key as "0" | "1" | "2" | "3";
+    }
+  }
+
+  return "3";
 }
 
 export const RARITY_STYLES: {
