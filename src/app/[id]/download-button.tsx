@@ -8,15 +8,21 @@ import { ImageDownIcon, LoaderCircleIcon } from "lucide-react";
 export function DownloadButton({
   profile,
   cardRef,
+  functionRef,
 }: {
   profile: AppBskyActorDefs.ProfileViewDetailed;
   cardRef: RefObject<HTMLDivElement>;
+  functionRef: RefObject<{ capture: () => void }>;
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
 
   async function downloadImage() {
-    if (cardRef.current !== null) {
+    if (cardRef.current !== null && functionRef.current !== null) {
       setIsDownloading(true);
+      functionRef.current.capture();
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       const dataUrl = await toPng(cardRef.current, {
         includeQueryParams: true,
         filter: (node) => {

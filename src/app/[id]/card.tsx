@@ -11,7 +11,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef, useImperativeHandle } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
 import { RARITY_STYLES, getRarity, TYPE_STYLES, getType } from "./hash";
 import { HeartIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
@@ -42,9 +42,11 @@ function isTouchDevice() {
 export function Card({
   profile,
   cardRef,
+  functionRef,
 }: {
   profile: AppBskyActorDefs.ProfileViewDetailed;
   cardRef: RefObject<HTMLDivElement>;
+  functionRef: RefObject<{ capture: () => void }>;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -91,6 +93,40 @@ export function Card({
     oklch(0.999994 0.0000497986 23.7884 / 0.5) ${mousePercentX}%,
     rgba(0, 0, 0, 0) ${shineRight}%
   )`;
+
+  useImperativeHandle(functionRef, () => {
+    return {
+      capture() {
+        if (ref.current) {
+          const { width, height } = ref.current.getBoundingClientRect();
+          const mouseX = Math.random() * width;
+          const mouseY = Math.random() * height;
+
+          const percentX = mouseX / width;
+          const percentY = mouseY / height;
+
+          const _rotateY = (percentX - 0.5) * -30;
+          const _rotateX = (percentY - 0.5) * 30;
+
+          const _mousePercentX = percentX * 100;
+          const _mousePercentY = percentY * 100;
+
+          rotateXSpring.set(_rotateX);
+          rotateYSpring.set(_rotateY);
+
+          mousePercentX.set(_mousePercentX);
+          mousePercentY.set(_mousePercentY);
+
+          translateX.set((easeOut(percentX) - 0.5) * MAX_FOLLOW_DISTANCE);
+          translateY.set((easeOut(percentY) - 0.5) * MAX_FOLLOW_DISTANCE);
+
+          translateZ.set(1);
+
+          hovering.set(0.8);
+        }
+      },
+    };
+  });
 
   useAnimationFrame((time) => {
     if (ref.current === null) {
@@ -193,177 +229,178 @@ export function Card({
   ]);
 
   return (
-    <motion.div
-      style={{
-        perspective: "1000px",
-        transformStyle: "preserve-3d",
-        width: WIDTH,
-        height: HEIGHT,
-      }}
-      ref={cardRef}
-    >
-      <motion.div
-        className="rounded-md grid w-full h-full"
-        ref={ref}
-        whileHover={{
-          scale: 1.1,
-          boxShadow: `var(--shadow-elevation-high)`,
-        }}
-        whileTap={{
-          scale: 1.1,
-          boxShadow: `var(--shadow-elevation-high)`,
-        }}
-        transition={spring}
+    <div className="bg-white p-8" ref={cardRef}>
+      <div
         style={{
-          touchAction: "none",
+          perspective: "1000px",
           transformStyle: "preserve-3d",
-          rotateX: rotateXSpring,
-          rotateY: rotateYSpring,
-          rotateZ: rotateZ,
-          x: translateX,
-          y: translateY,
+          width: WIDTH,
+          height: HEIGHT,
         }}
       >
-        <div
-          className={`relative aspect-3/4 w-80 rounded-md select-none flex flex-col bg-white border-2 ${rarityStyle.border}`}
+        <motion.div
+          className="rounded-md grid w-full h-full"
+          ref={ref}
+          whileHover={{
+            scale: 1.1,
+            boxShadow: `var(--shadow-elevation-high)`,
+          }}
+          whileTap={{
+            scale: 1.1,
+            boxShadow: `var(--shadow-elevation-high)`,
+          }}
+          transition={spring}
           style={{
+            touchAction: "none",
             transformStyle: "preserve-3d",
+            rotateX: rotateXSpring,
+            rotateY: rotateYSpring,
+            rotateZ: rotateZ,
+            x: translateX,
+            y: translateY,
           }}
         >
           <div
-            className="relative flex aspect-square flex-col"
+            className={`relative aspect-3/4 w-80 rounded-md select-none flex flex-col bg-white border-2 ${rarityStyle.border}`}
             style={{
               transformStyle: "preserve-3d",
             }}
           >
             <div
-              className="absolute inset-0"
+              className="relative flex aspect-square flex-col"
               style={{
                 transformStyle: "preserve-3d",
               }}
             >
-              <img
-                className="absolute aspect-square w-full rounded-t-sm"
-                src={profile.avatar}
-                draggable="false"
-                alt={profile.displayName}
-              />
-              {(rarity === "SSR" || rarity === "SSSR") && (
-                <motion.div
-                  id="foil"
-                  className="absolute inset-0 mix-blend-color-dodge"
-                  style={{
-                    backgroundImage: overlayTemplate,
-                    backgroundSize: "100%, 200%",
-                    backgroundBlendMode: "multiply, screen",
-                    backgroundPosition: overlayPositionTemplate,
-                    opacity: overlayOpacity,
-                  }}
+              <div
+                className="absolute inset-0"
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <img
+                  className="absolute aspect-square w-full rounded-t-sm"
+                  src={profile.avatar}
+                  draggable="false"
+                  alt={profile.displayName}
                 />
-              )}
-            </div>
-
-            <motion.div
-              className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${rarityStyle.gradient} ${rarityStyle.text}`}
-              style={{
-                transformStyle: "preserve-3d",
-                z: translateZText,
-                scale: nameScale,
-              }}
-            >
-              <div className="flex flex-col">
-                <div className="text-xl flex flex-row items-center gap-2">
-                  <SparklesIcon className="w-5 h-5 text-white" />
-
-                  {profile.displayName ?? profile.handle}
-                </div>
-                <span className="text-sm opacity-75">@{profile.handle}</span>
+                {(rarity === "SSR" || rarity === "SSSR") && (
+                  <motion.div
+                    id="foil"
+                    className="absolute inset-0 mix-blend-color-dodge"
+                    style={{
+                      backgroundImage: overlayTemplate,
+                      backgroundSize: "100%, 200%",
+                      backgroundBlendMode: "multiply, screen",
+                      backgroundPosition: overlayPositionTemplate,
+                      opacity: overlayOpacity,
+                    }}
+                  />
+                )}
               </div>
 
-              <div className="absolute inset-0 overflow-hidden">
-                <motion.div
-                  className="size-full"
-                  style={{
-                    opacity: overlayOpacity,
-                    backgroundImage: nameShineTemplate,
-                  }}
-                />
-              </div>
               <motion.div
-                className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${rarityStyle.glow}`}
-                style={{ z: translateZRarity }}
-                animate={
-                  rarity === "SSR" || rarity === "SSSR"
-                    ? {
-                        scale: [0.9, 1.2, 0.9],
-                        transition: {
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        },
-                      }
-                    : {}
-                }
+                className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${rarityStyle.gradient} ${rarityStyle.text}`}
+                style={{
+                  transformStyle: "preserve-3d",
+                  z: translateZText,
+                  scale: nameScale,
+                }}
               >
-                {rarity}
+                <div className="flex flex-col">
+                  <div className="text-xl flex flex-row items-center gap-2">
+                    <SparklesIcon className="w-5 h-5 text-white" />
+
+                    {profile.displayName ?? profile.handle}
+                  </div>
+                  <span className="text-sm opacity-75">@{profile.handle}</span>
+                </div>
+
+                <div className="absolute inset-0 overflow-hidden">
+                  <motion.div
+                    className="size-full"
+                    style={{
+                      opacity: overlayOpacity,
+                      backgroundImage: nameShineTemplate,
+                    }}
+                  />
+                </div>
+                <motion.div
+                  className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${rarityStyle.glow}`}
+                  style={{ z: translateZRarity }}
+                  animate={
+                    rarity === "SSR" || rarity === "SSSR"
+                      ? {
+                          scale: [0.9, 1.2, 0.9],
+                          transition: {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                        }
+                      : {}
+                  }
+                >
+                  {rarity}
+                </motion.div>
               </motion.div>
-            </motion.div>
+              <motion.div
+                className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
+                style={{ z: translateZText }}
+              >
+                <HeartIcon size={20} className="fill-red-500 stroke-red-500" />
+                <span>{formatNumber(profile.postsCount ?? 0)}</span>
+              </motion.div>
+            </div>
+
             <motion.div
-              className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
-              style={{ z: translateZText }}
+              className="flex flex-row px-4 py-2 grow justify-between"
+              style={{
+                transformStyle,
+              }}
             >
-              <HeartIcon size={20} className="fill-red-500 stroke-red-500" />
-              <span>{formatNumber(profile.postsCount ?? 0)}</span>
+              <div className="text-2xl flex flex-col gap-1 tabular-nums justify-center">
+                <div
+                  className="flex items-center flex-row gap-4"
+                  style={{
+                    transformStyle: "preserve-3d",
+                  }}
+                >
+                  <SwordIcon className="text-[#29685f]" size={24} />
+                  <div className="text-[#19443c]">
+                    {formatNumber(profile.followersCount ?? 0)}
+                  </div>
+                </div>
+                <div
+                  className="flex items-center flex-row gap-4"
+                  style={{
+                    transformStyle: "preserve-3d",
+                  }}
+                >
+                  <ShieldIcon className="text-[#29685f]" size={24} />
+                  <div className="text-[#19443c]">
+                    {formatNumber(profile.followsCount ?? 0)}
+                  </div>
+                </div>
+              </div>
+              <div className="grid place-content-center rotate-x-20 rotate-y-160 translate-z-10">
+                <div
+                  className={`grid place-content-center p-2 rounded-full bg-white border-3 ${typeStyle.border}`}
+                >
+                  <typeStyle.Icon size={48} className={`${typeStyle.stroke}`} />
+                </div>
+              </div>
             </motion.div>
-          </div>
 
-          <motion.div
-            className="flex flex-row px-4 py-2 grow justify-between"
-            style={{
-              transformStyle,
-            }}
-          >
-            <div className="text-2xl flex flex-col gap-1 tabular-nums justify-center">
-              <div
-                className="flex items-center flex-row gap-4"
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <SwordIcon className="text-[#29685f]" size={24} />
-                <div className="text-[#19443c]">
-                  {formatNumber(profile.followersCount ?? 0)}
-                </div>
-              </div>
-              <div
-                className="flex items-center flex-row gap-4"
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <ShieldIcon className="text-[#29685f]" size={24} />
-                <div className="text-[#19443c]">
-                  {formatNumber(profile.followsCount ?? 0)}
-                </div>
-              </div>
+            <div className="mx-2 border-b border-[#29685f] opacity-50" />
+
+            <div className="pr-2 mb-0.5 text-right text-[0.5rem] text-[#29685f] opacity-50">
+              {profile.did}
             </div>
-            <div className="grid place-content-center rotate-x-20 rotate-y-160 translate-z-10">
-              <div
-                className={`grid place-content-center p-2 rounded-full bg-white border-3 ${typeStyle.border}`}
-              >
-                <typeStyle.Icon size={48} className={`${typeStyle.stroke}`} />
-              </div>
-            </div>
-          </motion.div>
-
-          <div className="mx-2 border-b border-[#29685f] opacity-50" />
-
-          <div className="pr-2 mb-0.5 text-right text-[0.5rem] text-[#29685f] opacity-50">
-            {profile.did}
           </div>
-        </div>
-        {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
-      </motion.div>
-    </motion.div>
+          {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
+        </motion.div>
+      </div>
+    </div>
   );
 }

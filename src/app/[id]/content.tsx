@@ -11,10 +11,11 @@ export default function Content({
   profile: AppBskyActorDefs.ProfileViewDetailed;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const functionRef = useRef<{ capture: () => void }>(null);
 
   return (
     <div className="flex flex-col items-center justify-center grow gap-4">
-      <Card profile={profile} cardRef={cardRef} />
+      <Card profile={profile} cardRef={cardRef} functionRef={functionRef} />
       <a
         href={`https://bsky.app/intent/compose?text=${window.location}`}
         target="_blank"
@@ -35,7 +36,11 @@ export default function Content({
           />
         </svg>
       </a>
-      <DownloadButton cardRef={cardRef} profile={profile} />
+      <DownloadButton
+        cardRef={cardRef}
+        profile={profile}
+        functionRef={functionRef}
+      />
     </div>
   );
 }
