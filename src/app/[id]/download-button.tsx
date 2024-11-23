@@ -1,9 +1,9 @@
 "use client";
 
-import { toPng } from "html-to-image";
 import { AppBskyActorDefs } from "@atproto/api";
 import { type RefObject, useState } from "react";
 import { ImageDownIcon, LoaderCircleIcon } from "lucide-react";
+import { domToPng } from "modern-screenshot";
 
 export function DownloadButton({
   profile,
@@ -21,10 +21,9 @@ export function DownloadButton({
       setIsDownloading(true);
       functionRef.current.capture();
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const dataUrl = await toPng(cardRef.current, {
-        includeQueryParams: true,
+      const dataUrl = await domToPng(cardRef.current, {
         filter: (node) => {
           if (node.nodeName === "IMG") {
             (node as HTMLImageElement).src = `/api/proxy-image?url=${
@@ -34,7 +33,6 @@ export function DownloadButton({
           return true;
         },
       });
-
       const link = document.createElement("a");
       link.download = `${profile.handle}.png`;
       link.href = dataUrl;
