@@ -10,7 +10,7 @@ import {
   useSpring,
   useTransform,
 } from "motion/react";
-import { RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { AppBskyActorDefs } from "@atproto/api";
 import { RARITY_STYLES, getRarity } from "./hash";
 import { FlameIcon, ShieldIcon, SparklesIcon, SwordIcon } from "lucide-react";
@@ -26,10 +26,10 @@ const spring = {
 } as const;
 
 function formatNumber(num: number) {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + "M";
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + "K";
+  if (num >= 1_000_000) {
+    return (num / 1_000_000).toFixed(1) + "M";
+  } else if (num >= 1_000) {
+    return (num / 1_000).toFixed(1) + "K";
   }
   return num.toString();
 }
@@ -191,7 +191,7 @@ export function Card({
         }}
       >
         <div
-          className={`relative aspect-[3/4] w-80 rounded select-none flex flex-col bg-white border-2 ${style.border}`}
+          className={`relative aspect-3/4 w-80 rounded-md select-none flex flex-col bg-white border-2 ${style.border}`}
           style={{
             transformStyle: "preserve-3d",
           }}
@@ -209,7 +209,7 @@ export function Card({
               alt={profile.displayName}
             />
             <motion.div
-              className={`absolute left-0 right-0 m-2 rounded bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
+              className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
               style={{
                 transformStyle: "preserve-3d",
                 z: translateZText,
@@ -247,7 +247,9 @@ export function Card({
               }}
             >
               <SwordIcon className="text-[#29685f]" size={24} />
-              <div className="text-[#19443c]">{profile.followersCount}</div>
+              <div className="text-[#19443c]">
+                {formatNumber(profile.followersCount ?? 0)}
+              </div>
             </div>
             <div
               className="flex items-center flex-row gap-4"
@@ -256,7 +258,9 @@ export function Card({
               }}
             >
               <ShieldIcon className="text-[#29685f]" size={24} />
-              <div className="text-[#19443c]">{profile.followsCount}</div>
+              <div className="text-[#19443c]">
+                {formatNumber(profile.followsCount ?? 0)}
+              </div>
             </div>
           </div>
 
@@ -266,7 +270,7 @@ export function Card({
             {profile.did}
           </div>
         </div>
-        {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-gradient-to-br from-transparent via-white to-transparent" /> */}
+        {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
       </motion.div>
     </div>
   );

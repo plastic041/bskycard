@@ -1,10 +1,9 @@
 "use client";
 
-import { toPng } from "html-to-image";
 import { Card } from "./card";
 import { AppBskyActorDefs } from "@atproto/api";
-import { useRef, useState } from "react";
-import { ImageDownIcon, LoaderCircleIcon } from "lucide-react";
+import { useRef } from "react";
+import { DownloadButton } from "./download-button";
 
 export default function Content({
   profile,
@@ -12,38 +11,13 @@ export default function Content({
   profile: AppBskyActorDefs.ProfileViewDetailed;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  async function downloadImage() {
-    if (cardRef.current !== null) {
-      setIsDownloading(true);
-      const dataUrl = await toPng(cardRef.current, {
-        includeQueryParams: true,
-        filter: (node) => {
-          if (node.nodeName === "IMG") {
-            (node as HTMLImageElement).src = `/api/proxy-image?url=${
-              (node as HTMLImageElement).src
-            }`;
-          }
-          return true;
-        },
-      });
-
-      const link = document.createElement("a");
-      link.download = `${profile.handle}.png`;
-      link.href = dataUrl;
-      link.click();
-
-      setIsDownloading(false);
-    }
-  }
 
   return (
     <div className="flex flex-col items-center justify-center grow gap-4">
       <Card profile={profile} cardRef={cardRef} />
       <a
         href={`https://bsky.app/intent/compose?text=${window.location}`}
-        className="flex flex-row gap-2 items-center rounded p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
+        className="flex flex-row gap-2 items-center rounded-sm p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
       >
         Share on
         <svg
@@ -60,20 +34,7 @@ export default function Content({
           />
         </svg>
       </a>
-      <button
-        className="flex flex-row gap-2 items-center rounded p-2 h-9 bg-[#0285FF] hover:brightness-110 text-white"
-        onClick={downloadImage}
-      >
-        {isDownloading ? (
-          <>
-            Downloading... <LoaderCircleIcon className="animate-spin" />
-          </>
-        ) : (
-          <>
-            Download <ImageDownIcon />
-          </>
-        )}
-      </button>
+      <DownloadButton cardRef={cardRef} profile={profile} />
     </div>
   );
 }

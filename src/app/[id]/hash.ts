@@ -44,25 +44,25 @@ export const RARITY_STYLES: {
 } = {
   R: {
     border: "border-gray-400",
-    gradient: "bg-gradient-to-br from-gray-300 to-gray-500",
+    gradient: "bg-linear-to-br from-gray-300 to-gray-500",
     glow: "shadow-gray-400/50",
     text: "text-gray-700",
   },
   SR: {
     border: "border-green-500",
-    gradient: "bg-gradient-to-br from-green-400 to-green-600",
+    gradient: "bg-linear-to-br from-green-400 to-green-600",
     glow: "shadow-green-500/50",
     text: "text-green-900",
   },
   SSR: {
     border: "border-purple-500",
-    gradient: "bg-gradient-to-br from-purple-400 to-purple-600",
+    gradient: "bg-linear-to-br from-purple-400 to-purple-600",
     glow: "shadow-purple-500/50",
     text: "text-purple-50",
   },
   SSSR: {
     border: "border-yellow-500",
-    gradient: "bg-gradient-to-br from-yellow-500 to-yellow-600",
+    gradient: "bg-linear-to-br from-yellow-500 to-yellow-600",
     glow: "shadow-yellow-500/50",
     text: "text-yellow-50",
   },

@@ -38,7 +38,7 @@ export default function Home() {
         <button
           type="submit"
           disabled={id.trim() === ""}
-          className="transition-colors duration-200 grid disabled:bg-gray-100 disabled:text-gray-300 place-items-center border border-gray-200 w-10 h-10 shrink-0 rounded self-end"
+          className="transition-colors duration-200 grid disabled:bg-gray-100 disabled:text-gray-300 place-items-center border border-gray-200 w-10 h-10 shrink-0 rounded-sm self-end"
         >
           {isSubmitting ? (
             <LoaderCircle className="animate-spin" />
