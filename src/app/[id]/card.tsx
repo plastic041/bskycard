@@ -6,6 +6,7 @@ import {
   easeOut,
   motion,
   useAnimationFrame,
+  useMotionTemplate,
   useMotionValue,
   useSpring,
   useTransform,
@@ -47,6 +48,8 @@ export function Card({
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
+  const hovering = useSpring(0, spring);
+
   const mousePercentX = useMotionValue(0);
   const mousePercentY = useMotionValue(0);
   const translateX = useSpring(0, spring);
@@ -62,6 +65,27 @@ export function Card({
 
   const rarity = getRarity(profile.did);
   const style = RARITY_STYLES[rarity];
+
+  const overlayTemplate = useMotionTemplate`
+  radial-gradient(
+    circle 300px at ${mousePercentX}% ${mousePercentY}%,
+    #d8d8d8, #9d9d9d, #666666, #343434, #000000
+  ),
+  url("/gradient.jpg")
+  `;
+  const overlayPositionTemplate = useMotionTemplate`center, ${mousePercentX}% -${mousePercentY}%`;
+  const overlayOpacity = useTransform(hovering, [0, 1], [0, 0.8]);
+
+  const nameScale = useTransform(hovering, [0, 1], [1, 1.2]);
+
+  const shineLeft = useTransform(() => mousePercentX.get() - 20);
+  const shineRight = useTransform(() => mousePercentX.get() + 20);
+  const nameShineTemplate = useMotionTemplate`linear-gradient(
+    120deg in oklch,
+    rgba(0, 0, 0, 0) ${shineLeft}%,
+    oklch(0.999994 0.0000497986 23.7884 / 0.5) ${mousePercentX}%,
+    rgba(0, 0, 0, 0) ${shineRight}%
+  )`;
 
   useAnimationFrame((time) => {
     if (ref.current === null) {
@@ -119,6 +143,8 @@ export function Card({
       translateY.set((easeOut(percentY) - 0.5) * MAX_FOLLOW_DISTANCE);
 
       translateZ.set(1);
+
+      hovering.set(0.8);
     };
 
     const handleMouseEnd = () => {
@@ -127,6 +153,7 @@ export function Card({
       translateX.set(0);
       translateY.set(0);
       translateZ.set(0);
+      hovering.set(0);
     };
 
     if (isTouchDevice()) {
@@ -149,8 +176,10 @@ export function Card({
       };
     }
   }, [
+    hovering,
     mousePercentX,
     mousePercentY,
+    overlayOpacity,
     rotateXSpring,
     rotateYSpring,
     translateX,
@@ -202,17 +231,39 @@ export function Card({
               transformStyle: "preserve-3d",
             }}
           >
-            <img
-              className="absolute aspect-square w-full rounded-t-sm"
-              src={profile.avatar}
-              draggable="false"
-              alt={profile.displayName}
-            />
+            <div
+              className="absolute inset-0"
+              style={{
+                transformStyle: "preserve-3d",
+              }}
+            >
+              <img
+                className="absolute aspect-square w-full rounded-t-sm"
+                src={profile.avatar}
+                draggable="false"
+                alt={profile.displayName}
+              />
+              {(rarity === "SSR" || rarity === "SSSR") && (
+                <motion.div
+                  id="foil"
+                  className="absolute inset-0 mix-blend-color-dodge"
+                  style={{
+                    backgroundImage: overlayTemplate,
+                    backgroundSize: "100%, 200%",
+                    backgroundBlendMode: "multiply, screen",
+                    backgroundPosition: overlayPositionTemplate,
+                    opacity: overlayOpacity,
+                  }}
+                />
+              )}
+            </div>
+
             <motion.div
               className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${style.gradient} ${style.text}`}
               style={{
                 transformStyle: "preserve-3d",
                 z: translateZText,
+                scale: nameScale,
               }}
             >
               <div className="flex flex-col">
@@ -223,9 +274,31 @@ export function Card({
                 </div>
                 <span className="text-sm opacity-75">@{profile.handle}</span>
               </div>
+
+              <div className="absolute inset-0 overflow-hidden">
+                <motion.div
+                  className="size-full"
+                  style={{
+                    opacity: overlayOpacity,
+                    backgroundImage: nameShineTemplate,
+                  }}
+                />
+              </div>
               <motion.div
                 className={`mr-2 px-3 py-1 rounded-full text font-bold bg-white/20 backdrop-blur-sm text-white shadow-md ${style.glow}`}
                 style={{ z: translateZRarity }}
+                animate={
+                  rarity === "SSR" || rarity === "SSSR"
+                    ? {
+                        scale: [0.9, 1.2, 0.9],
+                        transition: {
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                      }
+                    : {}
+                }
               >
                 {rarity}
               </motion.div>
@@ -234,7 +307,7 @@ export function Card({
               className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
               style={{ z: translateZText }}
             >
-              <FlameIcon size={16} />
+              <FlameIcon size={22} className="fill-red-500 stroke-red-500" />
               <span>{formatNumber(profile.postsCount ?? 0)}</span>
             </motion.div>
           </div>

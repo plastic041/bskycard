@@ -19,7 +19,7 @@ const RARITY: {
   R: 1000,
 };
 
-export function getRarity(str: string) {
+export function getRarity(str: string): Rarity {
   const num = stringToNumber(str);
   const remainder = num % DIVIDER;
 

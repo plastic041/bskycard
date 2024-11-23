@@ -15,3 +15,31 @@ body {
     0px 7.1px 17.9px rgba(0, 0, 0, 0.131),
     0px 13.4px 33.4px rgba(0, 0, 0, 0.158), 0px 32px 80px rgba(0, 0, 0, 0.22);
 }
+
+@theme {
+  --animate-title-overlay: title-overlay 6s linear infinite;
+
+  @keyframes title-overlay {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    50% {
+      transform: translateX(100%);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+.bg-noise {
+  filter: contrast(170%) brightness(1000%);
+  background: linear-gradient(
+    120deg in oklch,
+    rgba(0, 0, 0, 0) 30%,
+    oklch(0.999994 0.0000497986 23.7884 / 0.6) 50%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
