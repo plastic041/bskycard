@@ -394,8 +394,13 @@ export function Card({
 
             <div className="mx-2 border-b border-[#29685f] opacity-50" />
 
-            <div className="pr-2 mb-0.5 text-right text-[0.5rem] text-[#29685f] opacity-50">
-              {profile.did}
+            <div className="flex flex-row justify-between items-center px-2 mb-0.5">
+              <span className="text-[0.5rem] text-[#29685f] opacity-50">
+                yourblueskycard.vercel.app
+              </span>
+              <span className="text-[0.5rem] text-[#29685f] opacity-50">
+                {profile.did}
+              </span>
             </div>
           </div>
           {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
