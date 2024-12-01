@@ -63,6 +63,7 @@ export function Card({
   const translateZ = useSpring(0, spring);
   const translateZText = useTransform(translateZ, [0, 1], [0, 48]);
   const translateZRarity = useTransform(translateZ, [0, 1], [0, 24]);
+  const translateZType = useTransform(translateZ, [0, 1], [18, 48]);
 
   const rotateXSpring = useSpring(0, spring);
   const rotateYSpring = useSpring(0, spring);
@@ -300,7 +301,11 @@ export function Card({
               </div>
 
               <motion.div
-                className={`absolute left-0 right-0 m-2 rounded-sm bg-[#19443c] py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${rarityStyle.gradient} ${rarityStyle.text}`}
+                className="absolute left-0 right-0 h-18 blur-md bg-slate-700/60 rounded-sm"
+                style={{ opacity: overlayOpacity }}
+              />
+              <motion.div
+                className={`absolute left-0 right-0 m-2 rounded-sm py-2 text-[#eef0e7] flex flex-row justify-between items-center px-2 ${rarityStyle.gradient} ${rarityStyle.text}`}
                 style={{
                   transformStyle: "preserve-3d",
                   z: translateZText,
@@ -345,6 +350,10 @@ export function Card({
                 </motion.div>
               </motion.div>
               <motion.div
+                className="absolute right-2 top-auto bottom-2 h-7 w-18 rounded-full blur-sm bg-slate-900/60"
+                style={{ opacity: overlayOpacity }}
+              />
+              <motion.div
                 className="absolute right-2 top-auto bottom-2 flex gap-2 items-center pl-3 pr-4 backdrop-blur rounded-full bg-gray-700/50 text-xl text-white"
                 style={{ z: translateZText }}
               >
@@ -383,12 +392,17 @@ export function Card({
                   </div>
                 </div>
               </div>
-              <div className="grid place-content-center rotate-x-20 rotate-y-160 translate-z-10">
-                <div
-                  className={`grid place-content-center p-2 rounded-full bg-white border-3 ${typeStyle.border}`}
+              <div className="grid place-items-center size-18 transform-3d">
+                <motion.div
+                  className="[grid-area:1/1] size-14 rounded-full blur-sm bg-slate-900/60"
+                  style={{ opacity: overlayOpacity }}
+                />
+                <motion.div
+                  className={`[grid-area:1/1] p-2 rounded-full bg-white border-3 ${typeStyle.border}`}
+                  style={{ z: translateZType, rotateX: 20, rotateY: 160 }}
                 >
                   <typeStyle.Icon size={48} className={`${typeStyle.stroke}`} />
-                </div>
+                </motion.div>
               </div>
             </motion.div>
 
@@ -403,7 +417,6 @@ export function Card({
               </span>
             </div>
           </div>
-          {/* <div className="absolute inset-0 opacity-50 mix-blend-overlay bg-linear-to-br from-transparent via-white to-transparent" /> */}
         </motion.div>
       </div>
     </div>
